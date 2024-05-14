@@ -1,0 +1,172 @@
+<!-- check_payroll.html -->
+{% extends "base.html" %}
+{% block title %}Check Payroll{% endblock %}
+
+{% block content %}
+<div class="container emp-h1-title">
+    <h1>Payroll Information</h1>
+</div>
+    <div class="emplist-tablewithbutton">
+        <div class="table-container">
+            <h2 class="emp-h2-title">Employee Information</h3>
+            <table class="employee-info">
+                <tr>
+                    <td><strong>Employee ID:</strong></td>
+                    <td>{{ employee.employee_id }}</td>
+                    <td><strong>Employee Type:</strong></td>
+                    <td>
+                        {% for assign_designation in employee.assign_designation %}
+                            {% set employee_type = assign_designation.employee_type %}
+                            {{ employee_type }}
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Full Name:</strong></td>
+                    <td>{{ employee.firstname }} {{ employee.middlename }} {{ employee.lastname }}</td>
+                    <td><strong>Initial Income:</strong></td>
+                    <td>Php {{ initial_income }}0</td>
+                </tr>
+                <tr>
+                    <td><strong>Designation:</strong></td>
+                    <td>
+                        {% if employee.assign_designation %}
+                            {{ employee.assign_designation[0].designation.designation_name }}
+                        {% else %}
+                            No designation assigned
+                        {% endif %}
+                    </td>
+                    <td><strong>Tax Rate:</strong></td>
+                    <td>Php {{ tax_rate }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Date Information</h3>
+                <p><strong>Date Today:</strong> {{ date_today }}</p>
+                <p><strong>Date Start:</strong> <input type="date" id="date_start" name="date_start"></p>
+                <p><strong>Date End:</strong> <input type="date" id="date_end" name="date_end"></p>
+            </div>
+            <div class="vertical-line"></div> 
+            <div class="col-md-6">
+                <h3>Calculated Payroll</h3>
+                <p><strong>Net Income:</strong> Php <span id="net_income"></span></p>
+                <p><strong>Additional Deductions:</strong> Php <span id="additionalDeductions"></span></p>
+                <p><strong>Tax Deduction:</strong> Php <span id="tax_deduction"></span></p>
+                <button onclick="calculatePayroll()">Generate Payslip</button>
+                <button onclick="overallReport()">Overall Report</button>
+                <br>
+                <br>
+            </div>
+        </div>
+
+<script>
+function calculatePayroll() {
+    var dateStart = document.getElementById("date_start").value;
+    var dateEnd = document.getElementById("date_end").value;
+    var initialIncome = parseFloat("{{ initial_income }}");
+    
+    // Calculate number of days between date start and date end
+    var startDate = new Date(dateStart);
+    var endDate = new Date(dateEnd);
+    var daysWorked = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1; // Including both start and end dates
+    
+    // Calculate total income before tax deduction
+    var totalIncomeBeforeTax = initialIncome * daysWorked;
+    
+    // Calculate tax deduction based on total income
+    var taxDeduction = totalIncomeBeforeTax * parseFloat("{{ tax_rate }}");
+    
+    // Calculate additional deductions based on employee type
+    var additionalDeductions = 0;
+    if ("{{ employee.assign_designation[0].employee_type }}" === 'Part-time') {
+    additionalDeductions = (initialIncome * daysWorked) / 2;    
+    }
+
+    
+    // Deduct additional deductions from total income before tax deduction
+    var totalIncomeAfterDeductions = totalIncomeBeforeTax - additionalDeductions;
+    
+    // Deduct tax from total income after additional deductions
+    var netIncome = totalIncomeAfterDeductions - taxDeduction;
+    
+    // Display calculated values
+    document.getElementById("net_income").innerText = netIncome.toFixed(2);
+    document.getElementById("tax_deduction").innerText = taxDeduction.toFixed(2);
+    document.getElementById("additionalDeductions").innerText = additionalDeductions.toFixed(2);
+
+    
+}
+
+function overallReport() {
+    var dateStart = document.getElementById("date_start").value;
+    var dateEnd = document.getElementById("date_end").value;
+    var initialIncome = parseFloat("{{ initial_income }}");
+
+    // Calculate number of days between date start and date end
+    var startDate = new Date(dateStart);
+    var endDate = new Date(dateEnd);
+    var daysWorked = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1; // Including both start and end dates
+
+    // Calculate total income before tax deduction
+    var totalIncomeBeforeTax = initialIncome * daysWorked;
+
+    // Calculate tax deduction based on total income
+    var taxDeduction = totalIncomeBeforeTax * parseFloat("{{ tax_rate }}");
+
+    // Calculate additional deductions based on employee type
+    var additionalDeductions = 0;
+    if ("{{ employee.assign_designation[0].employee_type }}" === 'Part-time') {
+        additionalDeductions = (initialIncome * daysWorked) / 2;    
+    }
+
+    // Deduct additional deductions from total income before tax deduction
+    var totalIncomeAfterDeductions = totalIncomeBeforeTax - additionalDeductions;
+
+    // Deduct tax from total income after additional deductions
+    var netIncome = totalIncomeAfterDeductions - taxDeduction;
+
+    // Create an object to hold the data
+    var payrollData = {
+        employeeID: "{{ employee.employee_id }}",
+        name: "{{ employee.firstname }} {{ employee.middlename }} {{ employee.lastname }}",
+        initialIncome: initialIncome,
+        daysWorked: daysWorked,
+        additionalDeductions: additionalDeductions,
+        taxDeduction: taxDeduction,
+        netIncome: netIncome,
+        dateToday: "{{ date_today }}"
+    };
+
+    var overallReportHtml = `
+    <div id="overlay">
+        <div id="report-container">
+            <h2>Overall Payroll Report</h2>
+            <p><strong>Employee ID:</strong> ${payrollData.employeeID}</p>
+            <p><strong>Name:</strong> ${payrollData.name}</p>
+            <p><strong>Date:</strong> ${payrollData.dateToday}</p>
+            <p><strong>Income per Day:</strong> Php ${payrollData.initialIncome.toFixed(2)}</p>
+            <p><strong>Days Worked:</strong> ${payrollData.daysWorked}</p>
+            <p><strong>Additional Deductions:</strong> Php ${payrollData.additionalDeductions.toFixed(2)}</p>
+            <p><strong>Tax Deduction:</strong> Php ${payrollData.taxDeduction.toFixed(2)}</p>
+            <p><strong>Net Income:</strong> Php ${payrollData.netIncome.toFixed(2)}</p>
+            <button class="close-btn" onclick="closeOverlay()">Close</button>
+        </div>
+    </div>
+`;
+
+// Append the overlay to the body
+document.body.insertAdjacentHTML('beforeend', overallReportHtml);
+}
+
+// Function to close the overlay
+function closeOverlay() {
+var overlay = document.getElementById('overlay');
+overlay.parentNode.removeChild(overlay);
+}
+
+</script>
+
+{% endblock %}
+

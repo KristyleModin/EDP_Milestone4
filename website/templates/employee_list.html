@@ -1,0 +1,79 @@
+<!-- employee_list.html -->
+{% extends "base.html" %}
+{% block title %}Employee List{% endblock %}
+
+{% block content %}
+<div class="container emp-h1-title"> <!-- Center the heading -->
+    <h1>Employee Management System</h1>
+</div>
+<div class="emplist-tablewithbutton">
+    <div class="table-container">
+        <h2 class="emp-h2-title">Employee List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee ID </th>
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>Last Name</th>
+                    <th>Address Line</th>
+                    <th>Barangay</th>
+                    <th>Province</th>
+                    <th>Country</th>
+                    <th>Zip Code</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Employee Type</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.employee_id }}</td>
+                    <td>{{ employee.firstname }}</td>
+                    <td>{{ employee.middlename }}</td>
+                    <td>{{ employee.lastname }}</td>
+                    <td>{{ employee.address_line }}</td>
+                    <td>{{ employee.brgy }}</td>
+                    <td>{{ employee.province }}</td>
+                    <td>{{ employee.country }}</td>
+                    <td>{{ employee.zipcode }}</td>
+                    <td>{{ employee.department.dept_name }}</td>
+                    <td>
+                        {% if employee.assign_designation %}
+                            {{ employee.assign_designation[0].designation.designation_name }}
+                        {% else %}
+                            No designation assigned
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for assign_designation in employee.assign_designation %}
+                            {{ assign_designation.employee_type }}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for assign_designation in employee.assign_designation %}
+                            {{ assign_designation.status }}
+                        {% endfor %}
+                    </td>
+                    <td class="buttons">
+                        <form method="POST" action="{{ url_for('views.delete_employee', employee_id=employee.employee_id) }}" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        <a href="{{ url_for('views.update_employee', employee_id=employee.employee_id) }}"><button class="btn btn-primary btn-sm">Update</button></a>                    
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container mt-3">
+        <a href="{{ url_for('views.add_employee') }}" class="btn btn-primary">Add Employee</a>
+    </div>
+</div>
+{% endblock %}
+
+{% set display_footer = True %} 

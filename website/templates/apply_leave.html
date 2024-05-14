@@ -1,0 +1,37 @@
+<!-- apply_leave.html -->
+{% extends "base.html" %}
+{% block title %}Apply for Leave{% endblock %}
+
+{% block content %}
+<div class="container addemp-h1-title">
+<h1>Employee Leave Application</h1>
+</div>
+<div class="form-container">
+    <form method="POST" action="{{ url_for('views.apply_leave', employee_id=employee_id) }}">
+        <div class="form-group">
+            <label for="employee_id">Employee ID:</label>
+            <input type="text" id="employee_id" name="employee_id" value="{{ employee_id }}" readonly>
+        </div>
+        <div class="form-group">
+            <label for="leave_type">Type of Leave:</label>
+            <select id="leave_type" name="leave_type" required>
+                <option value="Vacation">Vacation</option>
+                <option value="Sick">Sick</option>
+                <option value="Maternity">Maternity</option>
+                <option value="Paternity">Paternity</option>
+                <option value="Annual Leave">Annual Leave</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" min="2020-01-o1" max="2030-01-01" required>
+        </div>
+        <div class="form-group">
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" min="2020-01-o1" max="2030-01-01" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+</div>
+{% endblock %}

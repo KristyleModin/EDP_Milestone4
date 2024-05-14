@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Signatories List{% endblock %}
+
+{% block content %}
+<div class="container addemp-h1-title"> 
+    <h1>Signatories Management System</h1>
+</div>
+<div class="tablewithbutton">
+    <div class="table-container">
+        <h2 class="emp-h2-title">Signatories List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>Last Name</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Employee Type</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.employee_id }}</td>
+                    <td>{{ employee.firstname }}</td>
+                    <td>{{ employee.middlename }}</td>
+                    <td>{{ employee.lastname }}</td>
+                    <td>{{ employee.department.dept_name }}</td>
+                    <td>
+                        {% if employee.assign_designation %}
+                            {{ employee.assign_designation[0].designation.designation_name }}
+                        {% else %}
+                            No designation assigned
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for assign_designation in employee.assign_designation %}
+                            {{ assign_designation.employee_type }}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for assign_designation in employee.assign_designation %}
+                            {{ assign_designation.status }}
+                        {% endfor %}
+                    </td>
+                    <td class="buttons">
+                        <a href="{{ url_for('views.show_subordinates', director_id=employee.employee_id) }}" class="btn btn-primary">View Subordinates</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

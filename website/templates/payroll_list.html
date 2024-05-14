@@ -1,0 +1,50 @@
+<!-- payroll_list.html -->
+{% extends "base.html" %}
+{% block title %}Payroll List{% endblock %}
+
+{% block content %}
+<div class="container emp-h1-title"> 
+    <h1>Payroll Management System</h1>
+</div>
+<div class="emplist-tablewithbutton">
+    <div class="table-container">
+        <h2 class="emp-h2-title">Payroll List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee ID </th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.employee_id }}</td>
+                    <td>{{ employee.firstname }}</td>
+                    <td>{{ employee.lastname }}</td>
+                    <td>{{ employee.department.dept_name }}</td>
+                    <td>
+                        {% if employee.assign_designation %}
+                            {{ employee.assign_designation[0].designation.designation_name }}
+                        {% else %}
+                            No designation assigned
+                        {% endif %}
+                    </td>
+                    <td class="buttons">
+                        <a href="{{ url_for('views.check_payroll', employee_id=employee.employee_id) }}">
+                            <button class="btn btn-info btn-sm">Check Payroll</button>
+                        </a>
+                    </td>                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% set display_footer = True %} 

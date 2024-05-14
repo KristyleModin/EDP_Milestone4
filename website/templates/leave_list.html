@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block title %}Leave List{% endblock %}
+
+{% block content %}
+<div class="container addemp-h1-title"> 
+<h1>Leave List</h1>
+</div>
+<div class="tablewithbutton">
+    <div class="table-container">
+        <h2 class="emp-h2-title">Employee List</h2>
+        <table>
+            <!-- Employee List Table Content -->
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>Last Name</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Employee Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.employee_id }}</td>
+                    <td>{{ employee.firstname }}</td>
+                    <td>{{ employee.middlename }}</td>
+                    <td>{{ employee.lastname }}</td>
+                    <td>{{ employee.department.dept_name }}</td>
+                    <td>
+                        {% if employee.assign_designation %}
+                            {{ employee.assign_designation[0].designation.designation_name }}
+                        {% else %}
+                            No designation assigned
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for assign_designation in employee.assign_designation %}
+                            {{ assign_designation.employee_type }}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('views.apply_leave', employee_id=employee.employee_id) }}" class="btn btn-success btn-sm">Apply for Leave</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Leave Details section -->
+<div class="leave-details">
+<div class="container addemp-h1-title">
+    <h2>Leave Details</h2>
+</div>
+    <div class="leavetablewithbutton">
+        <div class="sort-options">
+            <button onclick="sortAndFilterTable()" class="btn btn-primary">Sort by Status</button>
+            <select id="status-filter" class="form-select"  onchange="filterTable()">
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Declined">Declined</option>
+            </select>
+        </div>
+        <table id="leave-table" class="leave-table">
+            <thead>
+                <tr>
+                    <th>Leave ID</th>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Type of Leave</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for leave in leaves %}
+                <tr>
+                    <td>{{ leave.leaves_id }}</td>
+                    <td>{{ leave.employee_id }}</td>
+                    <td>{{ leave.employee.firstname }} {{ leave.employee.lastname }}</td>
+                    <td>{{ leave.leave_type }}</td>
+                    <td>{{ leave.start_leave.strftime('%B %d, %Y') }} to {{ leave.end_leave.strftime('%B %d, %Y') }}</td>
+                    <td>
+                        {% if leave.status == 'Pending' %}
+                            <span class="status-indicator yellow"></span> Pending
+                        {% elif leave.status == 'Approved' %}
+                            <span class="status-indicator green"></span> Approved
+                        {% elif leave.status == 'Declined' %}
+                            <span class="status-indicator red"></span> Declined
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if leave.status == 'Pending' %}
+                            <button onclick="approve_leave('{{ leave.leaves_id }}')" class="btn btn-success">Approve</button>
+                            <button onclick="decline_leave('{{ leave.leaves_id }}')" class="btn btn-danger">Decline</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function sortAndFilterTable() {
+        sortTable();
+        filterTable();
+    }
+    
+    // Function to sort the leave details table by status
+    function sortTable() {
+        var table, rows, switching, i, x, y, shouldSwitch;
+        table = document.getElementById("leave-table");
+        switching = true;
+        
+        // Loop until no switching has been done
+        while (switching) {
+            switching = false;
+            rows = table.getElementsByTagName("tr");
+            
+            // Loop through all table rows (except the header)
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("td")[5]; // Cell containing the status
+                y = rows[i + 1].getElementsByTagName("td")[5]; // Next cell containing the status
+                
+                // Compare the statuses for sorting
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+            
+            if (shouldSwitch) {
+                // Switch the rows if needed
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+    }
+
+    // Call the sortTable function when the document is fully loaded
+    document.addEventListener("DOMContentLoaded", function () {
+        sortTable();
+    });
+
+    
+    function filterTable() {
+        var status = document.getElementById("status-filter").value;
+        var rows = document.getElementById("leave-table").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var rowStatus = row.cells[5].textContent.trim(); // Get the status from the table cell directly
+            if (status === "" || rowStatus === status) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        }
+    }
+
+</script>
+
+
+<script>
+    function approve_leave(leaveID) {
+        var directorFirstName = prompt("Please enter director's first name:");
+        var directorLastName = prompt("Please enter director's last name:");
+        
+        if (directorFirstName && directorLastName) {
+            $.ajax({
+                type: 'POST',
+                url: '/approve_leave/' + leaveID,  // Adjusted to include the leaveId in the URL
+                data: {
+                    director_first_name: directorFirstName,
+                    director_last_name: directorLastName
+                },
+                success: function(response) {
+                    alert(response.message);
+                    // Reload the page or update UI as needed
+                },
+                error: function(xhr, status, error) {
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        alert(xhr.responseJSON.error);
+                    } else {
+                        alert('An error occurred: ' + error); // Handle the error in non-JSON format
+                    }
+                }
+            });
+        } else {
+            alert('Please provide both first name and last name of the director.');
+        }
+    }
+
+    function decline_leave(leaveID) {
+        var directorFirstName = prompt("Please enter director's first name:");
+        var directorLastName = prompt("Please enter director's last name:");
+        
+        if (directorFirstName && directorLastName) {
+            $.ajax({
+                type: 'POST',
+                url: '/decline_leave/' + leaveID,
+                data: {
+                    director_first_name: directorFirstName,
+                    director_last_name: directorLastName
+                },
+                success: function(response) {
+                    alert(response.message);
+                    // Reload the page or update UI as needed
+                },
+                error: function(xhr, status, error) {
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        alert(xhr.responseJSON.error);
+                    } else {
+                        alert('An error occurred: ' + error); // Handle the error in non-JSON format
+                    }
+                }
+            });
+        } else {
+            alert('Please provide both first name and last name of the director.');
+        }
+    }
+</script>
+
+
+{% endblock %}
+    

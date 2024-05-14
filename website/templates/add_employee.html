@@ -1,0 +1,97 @@
+<!-- add_employee.html -->
+{% extends "base.html" %}
+{% block title %}Add Employee{% endblock %}
+
+{% block content %}
+<div class="container addemp-h1-title"> <!-- Center the heading -->
+    <h1>Employee Management System</h1>
+</div>
+<h2 class="emp-h2-title">Add New Employee</h2>
+<div class="form-container">
+    <form method="POST" action="{{ url_for('views.add_employee') }}">
+        <div class="form-group">
+            <label for="firstname">First Name:</label>
+            <input type="text" class="form-control" id="firstname" name="firstname" required>
+        </div>
+        <div class="form-group">
+            <label for="middlename">Middle Name:</label>
+            <input type="text" class="form-control" id="middlename" name="middlename">
+        </div>
+        <div class="form-group">
+            <label for="lastname">Last Name:</label>
+            <input type="text" class="form-control" id="lastname" name="lastname" required>
+        </div>
+        <div class="form-group">
+            <label for="address_line">Address Line:</label>
+            <input type="text" class="form-control" id="address_line" name="address_line" required>
+        </div>
+        <div class="form-group">
+            <label for="brgy">Barangay:</label>
+            <input type="text" class="form-control" id="brgy" name="brgy" required>
+        </div>
+        <div class="form-group">
+            <label for="province">Province:</label>
+            <input type="text" class="form-control" id="province" name="province" required>
+        </div>
+        <div class="form-group">
+            <label for="country">Country:</label>
+            <input type="text" class="form-control" id="country" name="country" required>
+        </div>
+        <div class="form-group">
+            <label for="zipcode">Zip Code:</label>
+            <input type="text" class="form-control" id="zipcode" name="zipcode" required>
+        </div>
+        <div class="form-group">
+            <label for="department">Department:</label>
+            <select class="form-control" id="department" name="department">
+                <option value="IT Department">Information Technology Department</option>
+                <option value="Data Science Department">Data Science Department</option>
+                <option value="Computer Science Department">Computer Science Department</option>
+                <option value="Information System Department">Information System Department</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="designation">Designation:</label>
+            <select class="form-control" id="designation" name="designation">
+                <option value="Director">Director</option>
+                <option value="Manager">Manager</option>
+                <option value="Team Leader">Team Leader</option>
+                <option value="Team Member">Team Member</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="employee_type">Employee Type:</label>
+            <select class="form-control" id="employee_type" name="employee_type">
+                <option value="Full-time">Full-Time</option>
+                <option value="Part-time">Part-Time</option>
+                <option value="Temporary">Temporary</option>
+                <option value="Dismissed">Dismissed</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select class="form-control" id="status" name="status">
+                <option value="Active">Active</option>
+                <option value="Resigned">Resigned</option>
+                <option value="AWOL">AWOL</option>
+            </select>
+        <div class="container mt-3">
+        <button type="submit" class="btn btn-primary">Add Employee</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById("emp_num").addEventListener("blur", function() {
+        var empNumInput = this.value;
+        fetch('/check_emp_num/' + empNumInput)
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    document.getElementById("empNumError").style.display = "block";
+                } else {
+                    document.getElementById("empNumError").style.display = "none";
+                }
+            });
+    });
+
+{% endblock %}

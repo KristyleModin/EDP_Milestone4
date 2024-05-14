@@ -1,0 +1,73 @@
+<!--update_employee.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Update Employee</title>
+</head>
+<body>
+    <div class="container addemp-h1-title"> 
+    <h1><a href="{{ url_for('views.render_employee_list') }}" style="text-decoration: none; color: inherit;">Employee Management System</a></h1>
+    </div>
+    <h2 class="emp-h2-title">Update Employee</h2>
+    <div class="form-container">
+    <form method="POST" action="{{ url_for('views.update_employee', employee_id=employee.employee_id) }}">
+        <label for="firstname">First Name:</label>
+        <input type="text" id="firstname" name="firstname" value="{{ employee.firstname }}">
+        <label for="middlename">Middle Name:</label>
+        <input type="text" id="middlename" name="middlename" value="{{ employee.middlename }}">
+        <label for="lastname">Last Name:</label>
+        <input type="text" id="lastname" name="lastname" value="{{ employee.lastname }}">
+        <label for="address_line">Address Line:</label>
+        <input type="text" id="address_line" name="address_line" value="{{ employee.address_line }}">
+        <label for="brgy">Barangay:</label>
+        <input type="text" id="brgy" name="brgy" value="{{ employee.brgy }}">
+        <label for="province">Province:</label>
+        <input type="text" id="province" name="province" value="{{ employee.province }}">
+        <label for="country">Country:</label>
+        <input type="text" id="country" name="country" value="{{ employee.country }}">
+        <label for="zipcode">Zip Code:</label>
+        <input type="text" id="zipcode" name="zipcode" value="{{ employee.zipcode }}">
+        <div class="form-group">
+            <label for="department">Department:</label>
+            <select class="form-control" id="department" name="department">
+                <option value="IT Department" {% if employee.department.dept_name == 'Information Technology Department' %} selected {% endif %}>Information Technology Department</option>
+                <option value="DS Department" {% if employee.department.dept_name == 'Data Science Department' %} selected {% endif %}>Data Science Department</option>
+                <option value="CS Department" {% if employee.department.dept_name == 'Computer Science Department' %} selected {% endif %}>Computer Science Department</option>
+                <option value="IS Department" {% if employee.department.dept_name == 'Information System Department' %} selected {% endif %}>Information System Department</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="designation">Designation:</label>
+            <select class="form-control" id="designation" name="designation">
+                <option value="Director" {% if employee.assign_designation[0].designation.designation_name == 'Director' %} selected {% endif %}>Director</option>
+                <option value="Manager" {% if employee.assign_designation[0].designation.designation_name == 'Manager' %} selected {% endif %}>Manager</option>
+                <option value="Team Leader" {% if employee.assign_designation[0].designation.designation_name == 'Team Leader' %} selected {% endif %}>Team Leader</option>
+                <option value="Team Member" {% if employee.assign_designation[0].designation.designation_name == 'Team Member' %} selected {% endif %}>Team Member</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="employee_type">Employee Type:</label>
+            <select class="form-control" id="employee_type" name="employee_type">
+                <option value="Full-time" {% if employee.assign_designation.employee_type == 'Full-time' %} selected {% endif %}>Full-Time</option>
+                <option value="Part-time" {% if employee.assign_designation.employee_type == 'Part-time' %} selected {% endif %}>Part-Time</option>
+                <option value="Temporary" {% if employee.assign_designation.employee_type == 'Temporary' %} selected {% endif %}>Temporary</option>
+                <option value="Dismissed" {% if employee.assign_designation.employee_type == 'Dismissed' %} selected {% endif %}>Dismissed</option>
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select class="form-control" id="status" name="status">
+                <option value="Active" {% if employee.assign_designation.status == 'Active' %} selected {% endif %}>Active</option>
+                <option value="Resigned" {% if employee.assign_designation.status == 'Resigned' %} selected {% endif %}>Resigned</option>
+                <option value="AWOL" {% if employee.assign_designation.status == 'AWOL' %} selected {% endif %}>AWOL</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Update Employee</button>
+    </form>
+</body>
+</html>

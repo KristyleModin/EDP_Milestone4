@@ -1,0 +1,67 @@
+<!-- update_signatories.html -->
+{% extends "base.html" %}
+{% block title %}Update Signatory{% endblock %}
+
+{% block content %}
+<h1>Update Signatory</h1>
+<div class="form-container">
+    <form method="POST" action="{{ url_for('views.update_signatory', signatory_id=signatory.employee_id) }}">
+        <div class="form-group">
+            <label for="firstname">First Name:</label>
+            <input type="text" id="firstname" name="firstname" value="{{ signatory.firstname }}" required>
+        </div>
+        <div class="form-group">
+            <label for="middlename">Middle Name:</label>
+            <input type="text" id="middlename" name="middlename" value="{{ signatory.middlename }}">
+        </div>
+        <div class="form-group">
+            <label for="lastname">Last Name:</label>
+            <input type="text" id="lastname" name="lastname" value="{{ signatory.lastname }}" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ signatory.email }}" required>
+        </div>
+        <div class="form-group">
+            <label for="employee">Employee:</label>
+            <input type="text" id="employee" name="employee" value="{{ signatory.employee }}">
+        </div>
+        <div class="form-group">
+            <label for="higher_superior">Higher Superior:</label>
+            <input type="text" id="higher_superior" name="higher_superior" value="{{ signatory.higher_superior }}">
+        </div>
+        <div class="form-group">
+            <label for="department">Department:</label>
+            <select id="department" name="department" required>
+                {% for department in departments %}
+                <option value="{{ department.dept_name }}" {% if department.dept_name == signatory.department.dept_name %} selected {% endif %}>{{ department.dept_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="designation">Designation:</label>
+            <select id="designation" name="designation" required>
+                {% for designation in designations %}
+                <option value="{{ designation.designation_name }}" {% if designation.designation_name == signatory.assign_designation[0].designation.designation_name %} selected {% endif %}>{{ designation.designation_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="employee_type">Employee Type:</label>
+            <select id="employee_type" name="employee_type" required>
+                <option value="Full-time" {% if signatory.assign_designation[0].employee_type == 'Full-time' %} selected {% endif %}>Full-Time</option>
+                <option value="Part-time" {% if signatory.assign_designation[0].employee_type == 'Part-time' %} selected {% endif %}>Part-Time</option>
+                <option value="Temporary" {% if signatory.assign_designation[0].employee_type == 'Temporary' %} selected {% endif %}>Temporary</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="Active" {% if signatory.assign_designation[0].status == 'Active' %} selected {% endif %}>Active</option>
+                <option value="Resigned" {% if signatory.assign_designation[0].status == 'Resigned' %} selected {% endif %}>Resigned</option>
+                <option value="AWOL" {% if signatory.assign_designation[0].status == 'AWOL' %} selected {% endif %}>AWOL</option>
+            </select>
+        </div>
+        <a href="{{ url_for('views.update_signatory', signatory_id=signatory.signatory_id) }}" class="btn btn-primary">Update Signatory</a>
+        <button type="submit" class="btn btn-primary">Update Signatory</button>
+        

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Subordinates{% endblock %}
+
+{% block content %}
+<div class="container addemp-h1-title"> 
+<h1>Subordinates under {{ director.firstname }} {{ director.lastname }}</h1>
+</div>
+<div class="table-container">
+    <h2 class="emp-h2-title">Subordinates</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Employee ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Employee Type</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subordinate in subordinates %}
+            <tr>
+                <td>{{ subordinate.employee_id }}</td>
+                <td>{{ subordinate.firstname }}</td>
+                <td>{{ subordinate.lastname }}</td>
+                <td>{{ subordinate.department.dept_name }}</td>
+                <td>
+                    {% if subordinate.assign_designation %}
+                        {{ subordinate.assign_designation[0].designation.designation_name }}
+                    {% else %}
+                        No designation assigned
+                    {% endif %}
+                </td>
+                <td>
+                    {% for assign_designation in subordinate.assign_designation %}
+                        {{ assign_designation.employee_type }}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for assign_designation in subordinate.assign_designation %}
+                        {{ assign_designation.status }}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
